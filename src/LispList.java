@@ -12,7 +12,7 @@ public class LispList implements Iterable<LispList>{
 	static final Logger logger = Logger.getLogger(LispList.class);
 
 	static {
-		logger.setLevel(Level.DEBUG); 
+		logger.setLevel(Level.INFO); 
 	}
 	
 	@Override
@@ -41,7 +41,7 @@ public class LispList implements Iterable<LispList>{
         		return false;
         	}
         }
-        return false;
+        return true;
     } 
     
 	public LispList add(LispList a) {
@@ -118,28 +118,21 @@ public class LispList implements Iterable<LispList>{
 	public boolean isEmpty() {
 		return list.size() == 0;
 	}
-	private static LispList car(LispList ll) {
+
+	public LispList car() {
+		LispList ll = this;
+		
 		if (ll.list.size() == 0)
 			return LispList.emptyList();
 		return ll.list.get(0);
 	}
-	public LispList car() {
-		return LispList.car(this);
+
+	public  LispList car(LispList ignore) {
+		return this.car();
 	}
-	/*
-		+ (LispList*) cdr:(LispList*) l   
-	{
-		LispList* retval;
-		retval = [LispList newInstance];
-		if ([l length] <=1) {
-			return [retval autorelease];
-		}
-		for (int i = 1; i < [l length]; i++) {
-			[retval.list addObject:[l.list objectAtIndex:i]];
-		}
-		return [retval autorelease];
-	} */
-	public static LispList cdr(LispList ll) {
+	
+	public  LispList cdr() {
+		LispList ll = this;
 		LispList retval = new LispList();
 		
 		if (ll.length() <= 1)
@@ -149,22 +142,11 @@ public class LispList implements Iterable<LispList>{
 		}
 		return retval;
 	}
-	public LispList cdr() {
-		return LispList.cdr(this);
+
+	public  LispList cdr(LispList ignore) {
+		return this.cdr();
 	}
-	/*
-		  + (LispList*) caar:(LispList*) l
-	{
-		LispList* retval;
-		retval = [LispList car:l];
-		if ([retval length] == 0) {
-			return [LispList emptyList];
-		}
-		else {
-			return [LispList car:retval];
-		} 
-	} */
-	 
+			
 	public static LispList caar(LispList ll) {
 		 LispList retval;
 		 
@@ -177,55 +159,27 @@ public class LispList implements Iterable<LispList>{
 		return LispList.caar(this);
 	}
 	
-	/* + (LispList*) cddr:(LispList*) l
-{
-	LispList* retval;
-	retval = [LispList cdr:l];
-	if ([retval length] == 0) {
-		return [LispList emptyList];
-	}
-	else {
-		return [LispList cdr:retval];
-	} 
-}	*/
 	public static LispList cddr(LispList ll) {
 		 LispList retval;
-		 retval = LispList.cdr(ll);
+		 retval = ll.cdr();
 		 if (retval.length() == 0)
 			 return LispList.emptyList();
-		 return LispList.cdr(retval);
+		 return retval.cdr();
 	}
 	public LispList cddr() {
 		return LispList.cddr(this);
 	}
-	/*+ (LispList*) cdar:(LispList*) l
-	{
-		LispList* retval;
-		retval = [LispList car:l];
-		if ([retval length] == 0) {
-			return [LispList emptyList];
-		}
-		else {
-			return [LispList cdr:retval];
-		} 
-	} */
+
 	public static LispList cdar(LispList ll) {
 		 LispList retval;
-		 retval = LispList.car(ll);
+		 retval = ll.car();
 		 if (retval.length() == 0)
 			 return LispList.emptyList();
-		 return LispList.cdr(retval);
+		 return retval.cdr();
 	}
 	public LispList cda() {
 		return LispList.cdar(this);
 	}
-	/* + (LispList*) cadr:(LispList*) l
-	{
-		LispList* retval;
-		
-		retval = [l elt:1];
-		return retval;
-		 */
 	
 	static LispList cadr(LispList ll) {
 		return ll.elt(1);
@@ -234,84 +188,43 @@ public class LispList implements Iterable<LispList>{
 	LispList cadr() {
 		return cadr(this);
 	}
-	/*
-	- (LispList*) elt:(NSInteger) index
-	{
-		if (index >= 0 && index < [list count]) 
-			return [list objectAtIndex:index];
-		else 
-			return [LispList emptyList];
-	} */
+
 	//TODO throw exception if index out of bounds
 	public LispList elt(int index) {
 		if (index >= 0 && index < list.size())
 			return list.get(index);
 		return LispList.emptyList();
 	}
-	/*
-	 + (LispList*) cadar:(LispList*) l
-{
-	LispList* retval;
-	retval = [LispList cdar:l];
-	if ([retval length] == 0) {
-		return [LispList emptyList];
-	}
-	else {
-		return [LispList car:retval];
-	} 
-}
-	 */
+
 	static LispList cadar(LispList ll) {
 		 LispList retval;
 		 retval = LispList.cdar(ll);
 		 if (retval.length() == 0)
 			 return LispList.emptyList();
-		 return LispList.car(retval);
+		 return retval.car();
 	}
 	LispList cadar() {
 		return LispList.cadar(this);
 	}
-	/* 
-		 * + (LispList*) caddr:(LispList*) l
-	{
-		LispList* retval;
-		retval = [LispList cddr:l];
-		if ([retval length] == 0) {
-			return [LispList emptyList];
-		}
-		else {
-			return [LispList car:retval];
-		} 
-	}	*/
-	 
+
 	static LispList caddr(LispList ll) {
 		 LispList retval;
 		 retval = LispList.cddr(ll);
 		 if (retval.length() == 0)
 			 return LispList.emptyList();
-		 return LispList.car(retval);
+		 return retval.car();
 	}
 	LispList caddr() {
 		return LispList.caddr(this);
 	}
-	/* + (LispList*) caadr:(LispList*) l
-	{
-		LispList* retval;
-		retval = [LispList cadr:l];
-		if ([retval length] == 0) {
-			return [LispList emptyList];
-		}
-		else {
-			return [LispList car:retval];
-		} 
-	} */
+
 	static LispList caadr(LispList ll) {
 		 LispList retval;
 
 		 retval = LispList.cadr(ll);
 		 if (retval.length() == 0)
 			 return LispList.emptyList();
-		 return LispList.car(retval);
+		 return retval.car();
 	}
 	LispList caadr() {
 		return LispList.caadr(this);
@@ -335,17 +248,7 @@ public class LispList implements Iterable<LispList>{
 			return list.get(n);
 		return emptyList();
 	}
-	 /*
-		  * + (LispList*) mapCar:(LispList*) inList and: (MapCarFunc*) func
-	{
-		LispList* retval;
-		retval = [LispList newInstance];
-		for (LispList* ll in inList.list) {
-			[retval.list addObject:[func apply:ll]];
-		}
-		return [retval autorelease];
-	}
-	  */
+
 	@Deprecated
 	static LispList mapCarDeprecated(LispList ll, Function<LispList, LispList> func ) {
 		LispList retval = new LispList();
@@ -364,23 +267,10 @@ public class LispList implements Iterable<LispList>{
 		return retval;
 	 }
 	
-	public LispList quote(LispList ll) {
-		return ll;
+	public LispList quote(LispList ignored) {
+		return this;
 	}
-	/* - (NSString*) toString
-	{
-		NSMutableString* ms = [[NSMutableString alloc] initWithString:@"("];
-		NSString *retval;  // = [[NSString alloc] initWithString:@""];
-		
-		for (LispList* ll in list) {
-			[ms appendString:[ll toString]];
-			[ms appendString:@" "];
-		}
-		[ms appendString:@")"]; 
-		retval = [ms copy];
-		[ms release];
-		return [retval autorelease];
-	} */
+
 	public String toString() {
 		StringBuffer retval = new StringBuffer();
 		
@@ -406,7 +296,8 @@ public class LispList implements Iterable<LispList>{
 	 * @param ll
 	 * @return
 	 */
-	public LispAtom sumFlatList(LispList ll) {
+	public LispAtom sumFlatList(LispList ignored) {
+		LispList ll = this;
 		LispAtom result = new LispAtom(new BigDecimal("0"));
 		
 		//logger.debug("In LispAtom::addNew");
@@ -453,12 +344,14 @@ public class LispList implements Iterable<LispList>{
 		LispMapcarFunction func = LispList::eval;
 		args = LispList.mapCar(this.cdr(), func);
 		
+		//If there is only one list element then car it
+		if (args.length() == 1)
+			args = args.car();
+
 		logger.debug("Argument eval is: " + args);
-		
-		LispAtom arg1 = LispAtom.downcast(args.car());
-		
-		//The first argument is pretty much irrelevant. I think I should use the function atom
-		 result = lf.checkMod(arg1, args); 
+
+		//The 2nd argument is irrelevant for most functions. Left for extensibility
+		 result = lf.checkMod(args, null); 
 		
 		logger.debug("Result is: " + result);
 		return result;

@@ -12,7 +12,7 @@ public class ReadLispList {
 	}
 	
 	static public final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
-	static public final String DELIMS = "[\\s,(,)]";
+	static public final String DELIMS = "[\\s,(,),\\']";
 	static public final String PROGRAM_NAME = "Mini LISP";
 	static public final String CONSOLE_PROMPT = PROGRAM_NAME + "> ";
 	
@@ -23,7 +23,7 @@ public class ReadLispList {
 		return offset;
 	}
 	
-	public ArrayList<String> removeWhiteSpaceTokens(String[] tokens) {
+	public static ArrayList<String> removeWhiteSpaceTokens(String[] tokens) {
 		ArrayList<String> newTokens = new ArrayList<String>();
 		
 		for (int i = 0; i < tokens.length; i++) {
@@ -40,7 +40,7 @@ public class ReadLispList {
 	 * @param tokens
 	 * @return
 	 */
-	public boolean checkValidParentheses(ArrayList<String> tokens) {
+	public static boolean checkValidParentheses(ArrayList<String> tokens) {
 		int numOpen = 0;
 		
 		for (String s : tokens) {
@@ -63,7 +63,7 @@ public class ReadLispList {
 	 * @param offset
 	 * @return
 	 */
-	public int findInnerSExp(ArrayList<String> tokens, int startOffset) {
+	public static int findInnerSExp(ArrayList<String> tokens, int startOffset) {
 		int numOpen = 0;
 		String s;
 		
@@ -92,7 +92,7 @@ public class ReadLispList {
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList<String> expandQuotes(ArrayList<String> tokens) throws Exception {
+	public static ArrayList<String> expandQuotes(ArrayList<String> tokens) throws Exception {
 		ArrayList<String> newTokens = new ArrayList<String>();
 		int startOffset, endOffset;
 		int j;
@@ -100,9 +100,15 @@ public class ReadLispList {
 		for (int i = 0; i < tokens.size(); i++) {
 			if (tokens.get(i).matches("'")) {
 				startOffset = i+1;
-				endOffset = findInnerSExp(tokens, startOffset);
-				if (endOffset == -1)
-					throw new Exception("Parentheses in expression don't match");
+				// The case where an atom is quoted
+				if (!tokens.get(startOffset).matches("\\(")) {
+					endOffset = startOffset;
+				}
+				else {
+					endOffset = findInnerSExp(tokens, startOffset);
+					if (endOffset == -1)
+						throw new Exception("Parentheses in expression don't match");
+				}
 				
 				newTokens.add("(");
 				newTokens.add("quote");
@@ -112,7 +118,7 @@ public class ReadLispList {
 				}
 				
 				newTokens.add(")");
-				i = j;
+				i = j - 1;   //i will immediately increment by 1 in the for loop
 			}
 			else
 				newTokens.add(tokens.get(i));
@@ -122,7 +128,7 @@ public class ReadLispList {
 	}
 	
 	// Recursive function to make nested lists in ll.  Returns the offset of the next un-consumed token
-	public int newListRecursive(LispList ll, ArrayList<String> tokens, int offset) {
+	public static int newListRecursive(LispList ll, ArrayList<String> tokens, int offset) {
 	
 		while (offset < tokens.size()) {
 			 // Start of nested list. Create new list add it to current LispList
@@ -145,7 +151,7 @@ public class ReadLispList {
 		}
 		return offset;
 	}
-	public LispList strToList(String s) throws Exception {
+	public static LispList strToList(String s) throws Exception {
 		 String reg = String.format(WITH_DELIMITER, DELIMS);
 		 String[] tempTokens = s.split(reg);
 		 ArrayList<String> newTokens;

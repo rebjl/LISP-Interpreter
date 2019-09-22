@@ -26,6 +26,9 @@ public class LispAtom extends LispList  {
 
 		functions.put(new LispAtom("+"), LispList::sumFlatList);
 		functions.put(new LispAtom("quote"), LispList::quote);
+		functions.put(new LispAtom("cdr"), LispList::cdr);
+		functions.put(new LispAtom("car"), LispList::car);
+
 	}
 	
 	/**
@@ -213,6 +216,10 @@ public class LispAtom extends LispList  {
 
 	@Override
 	public LispList car() {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public LispList cdr() {
 		throw new UnsupportedOperationException();
 	}
 }
